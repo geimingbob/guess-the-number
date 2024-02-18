@@ -21,8 +21,10 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            color: #333;
+        h1 img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
         }
 
         p, #result, #timer {
@@ -50,11 +52,17 @@
         button:hover {
             background-color: #45a049;
         }
+
+        #message {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>Guess the Number Game</h1>
+        <h1><img src="gtn.png" alt="Game Title"></h1>
         <p>Guess a number between 1 and 100:</p>
         <input type="number" id="userGuess" min="1" max="100">
         <button onclick="checkGuess()">Submit Guess</button>
@@ -62,6 +70,11 @@
         <button onclick="restartGame()">Restart Game</button>
         <p id="timer">Time: 0 seconds</p>
         <audio id="winSound" src="win-sound.mp3"></audio>
+    </div>
+
+    <div id="message">
+        <p>Join the Discord to submit your runs and have a chance to get your username placed here:</p>
+        <a href="https://discord.gg/3G4RrAfjk4" target="_blank">https://discord.gg/3G4RrAfjk4</a>
     </div>
 
     <script>
