@@ -81,14 +81,17 @@
         let randomNumber;
         let attempts;
         let startTime;
-        let timerInterval;
+        let lastTimestamp;
+        let gameEnded = false;
 
         function startGame() {
             randomNumber = Math.floor(Math.random() * 100) + 1;
             attempts = 0;
-            startTime = Date.now();
+            startTime = performance.now();
+            lastTimestamp = startTime;
+            gameEnded = false;
             updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
+            requestAnimationFrame(updateTimer);
             document.getElementById('userGuess').disabled = false;
             document.querySelector('button').disabled = false;
             document.getElementById('userGuess').value = '';
@@ -96,12 +99,14 @@
         }
 
         function checkGuess() {
+            if (gameEnded) return;
+
             const userGuess = document.getElementById('userGuess').value;
             const resultElement = document.getElementById('result');
             attempts++;
 
             if (userGuess == randomNumber) {
-                clearInterval(timerInterval);
+                gameEnded = true;
                 resultElement.innerHTML = `Congratulations! You guessed the correct number in ${attempts} attempts. Time: ${getElapsedTime()}`;
                 resultElement.style.color = 'green';
                 disableInput();
@@ -121,19 +126,28 @@
         }
 
         function restartGame() {
-            clearInterval(timerInterval);
+            gameEnded = false;
             startGame();
         }
 
-        function updateTimer() {
-            const elapsedTime = getElapsedTime();
+        function updateTimer(timestamp) {
+            if (gameEnded) return;
+
+            const elapsedTime = getElapsedTime(timestamp);
             document.getElementById('timer').innerHTML = `Time: ${elapsedTime}`;
+            requestAnimationFrame(updateTimer);
         }
 
-        function getElapsedTime() {
-            const currentTime = Date.now();
-            const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
-            return `${elapsedSeconds} second${elapsedSeconds !== 1 ? 's' : ''}`;
+        function getElapsedTime(timestamp) {
+            const currentTimestamp = timestamp || performance.now();
+            const elapsedMilliseconds = currentTimestamp - startTime;
+            const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+            const remainingMilliseconds = Math.floor(elapsedMilliseconds % 1000);
+
+            const secondsStr = `${elapsedSeconds} second${elapsedSeconds !== 1 ? 's' : ''}`;
+            const millisecondsStr = `${remainingMilliseconds} millisecond${remainingMilliseconds !== 1 ? 's' : ''}`;
+
+            return `${secondsStr} ${millisecondsStr}`;
         }
 
         function playWinSound() {
