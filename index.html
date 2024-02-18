@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+
+        #game-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p, #result, #timer {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Guess the Number Game</h1>
+        <p>Guess a number between 1 and 100:</p>
+        <input type="number" id="userGuess" min="1" max="100">
+        <button onclick="checkGuess()">Submit Guess</button>
+        <div id="result"></div>
+        <button onclick="restartGame()">Restart Game</button>
+        <p id="timer">Time: 0 seconds</p>
+        <audio id="winSound" src="win-sound.mp3"></audio>
+    </div>
+
+    <script>
+        let randomNumber;
+        let attempts;
+        let startTime;
+        let timerInterval;
+
+        function startGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            startTime = Date.now();
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+            document.getElementById('userGuess').disabled = false;
+            document.querySelector('button').disabled = false;
+            document.getElementById('userGuess').value = '';
+            document.getElementById('result').innerHTML = '';
+        }
+
+        function checkGuess() {
+            const userGuess = document.getElementById('userGuess').value;
+            const resultElement = document.getElementById('result');
+            attempts++;
+
+            if (userGuess == randomNumber) {
+                clearInterval(timerInterval);
+                resultElement.innerHTML = `Congratulations! You guessed the correct number in ${attempts} attempts. Time: ${getElapsedTime()}`;
+                resultElement.style.color = 'green';
+                disableInput();
+                playWinSound();
+            } else if (userGuess < randomNumber) {
+                resultElement.innerHTML = 'Try a higher number.';
+                resultElement.style.color = 'blue';
+            } else {
+                resultElement.innerHTML = 'Try a lower number.';
+                resultElement.style.color = 'red';
+            }
+        }
+
+        function disableInput() {
+            document.getElementById('userGuess').disabled = true;
+            document.querySelector('button').disabled = true;
+        }
+
+        function restartGame() {
+            clearInterval(timerInterval);
+            startGame();
+        }
+
+        function updateTimer() {
+            const elapsedTime = getElapsedTime();
+            document.getElementById('timer').innerHTML = `Time: ${elapsedTime}`;
+        }
+
+        function getElapsedTime() {
+            const currentTime = Date.now();
+            const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
+            return `${elapsedSeconds} second${elapsedSeconds !== 1 ? 's' : ''}`;
+        }
+
+        function playWinSound() {
+            const winSound = document.getElementById('winSound');
+            winSound.play();
+        }
+
+        // Start the game initially
+        startGame();
+    </script>
+</body>
+</html>
